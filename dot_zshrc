@@ -1,0 +1,53 @@
+# vi: ft=zsh
+
+export EDITOR="nvim"
+
+path+="${HOME}/.local/bin"
+path+="${HOME}/.rd/bin"
+export path
+
+# Stop less from recording history
+export LESSHISTFILE=-
+
+# oh-my-zsh
+#export ZSH="$HOME/.oh-my-zsh"
+#ZSH_THEME=""
+#plugins=()
+#zstyle ':omz:update' mode disabled
+#source $ZSH/oh-my-zsh.sh
+
+# Enable persistent history
+HISTFILE=~/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+setopt HIST_SAVE_NO_DUPS
+setopt INC_APPEND_HISTORY
+
+# Auto pushd
+setopt AUTO_PUSHD
+setopt PUSHD_SILENT
+
+# Initialize completion
+autoload -U compinit; compinit
+zstyle ':completion:*' matcher-list 'm:{A-Za-z}={A-Za-z}'
+
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
+
+# Aliases
+alias v=nvim
+alias vi=nvim
+alias vim=nvim
+alias t='tmux new-session -A -s home'
+
+# k8s
+alias k='kubectl'
+alias kc='kubectx'
+alias kn='kubens'
+
+# Starship
+eval "$(starship init zsh)"
+# Zoxide (better directory navigation)
+eval "$(zoxide init zsh)"
+# Direnv (might remove this later for devpods)
+eval "$(direnv hook zsh)"

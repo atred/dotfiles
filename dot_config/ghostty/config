@@ -1,0 +1,13 @@
+font-family = "FiraCode Nerd Font Mono"
+font-feature = -calt
+font-feature = -liga
+font-feature = -dlig
+font-size = 14
+theme = "Atom"
+window-padding-x = 6
+window-padding-y = 6
+macos-titlebar-proxy-icon = "hidden"
+window-width = 9999999
+window-height = 9999999
+confirm-close-surface = false
+shell-integration = zsh

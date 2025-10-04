@@ -16,21 +16,6 @@ export LESSHISTFILE=-
 #zstyle ':omz:update' mode disabled
 #source $ZSH/oh-my-zsh.sh
 
-# Enable persistent history
-HISTFILE=~/.zsh_history
-HISTSIZE=100000
-SAVEHIST=100000
-setopt HIST_SAVE_NO_DUPS
-setopt INC_APPEND_HISTORY
-
-# Auto pushd
-setopt AUTO_PUSHD
-setopt PUSHD_SILENT
-
-# Initialize completion
-autoload -U compinit; compinit
-zstyle ':completion:*' matcher-list 'm:{A-Za-z}={A-Za-z}'
-
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
@@ -38,6 +23,7 @@ source <(fzf --zsh)
 alias v=nvim
 alias vi=nvim
 alias vim=nvim
+alias ch=chezmoi
 alias t='tmux new-session -A -s home'
 
 # k8s

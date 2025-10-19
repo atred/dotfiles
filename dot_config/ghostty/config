@@ -11,3 +11,4 @@ window-width = 9999999
 window-height = 9999999
 confirm-close-surface = false
 shell-integration = zsh
+bell-features = no-system, no-audio, no-attention, no-title

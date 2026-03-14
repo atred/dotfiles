@@ -1,6 +1,7 @@
 # vi: ft=zsh
 
 export EDITOR="nvim"
+export XDG_CONFIG_HOME="$HOME/.config"
 
 path+="${HOME}/.local/bin"
 path+="${HOME}/.rd/bin"
@@ -37,3 +38,5 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 # Direnv (might remove this later for devpods)
 eval "$(direnv hook zsh)"
+# Mise
+eval "$(mise activate zsh)"

@@ -35,6 +35,7 @@ alias t='tmux new-session -A -s home'
 
 # git
 alias gcm='git commit -m'
+alias gs='git status'
 
 # k8s
 alias k='kubectl'

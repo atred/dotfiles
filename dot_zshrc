@@ -10,10 +10,21 @@ export path
 # Stop less from recording history
 export LESSHISTFILE=-
 
+# General options
 setopt autopushd
 
-# Set up fzf key bindings and fuzzy completion
-source <(fzf --zsh)
+# Completion
+autoload -Uz compinit
+compinit
+
+zstyle ':completion:*' matcher-list \
+  'm:{a-zA-Z}={A-Za-z}' \
+  'r:|[._-]=* r:|=*' \
+  'l:|=* r:|=*'
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 # Aliases
 alias v=nvim
@@ -22,10 +33,16 @@ alias vim=nvim
 alias ch=chezmoi
 alias t='tmux new-session -A -s home'
 
+# git
+alias gcm='git commit -m'
+
 # k8s
 alias k='kubectl'
 alias kc='kubectx'
 alias kn='kubens'
+
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
 
 # Starship
 eval "$(starship init zsh)"

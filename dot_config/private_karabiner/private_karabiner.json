@@ -5,7 +5,29 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Remap Cmd+Shift+` (backtick) to ~",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "grave_accent_and_tilde",
+                                    "modifiers": {
+                                        "mandatory": ["left_command", "left_shift"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "grave_accent_and_tilde",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "Cmd+HJKL as arrows, Cmd+Ctrl+HJKL passes through as original Cmd+HJKL",
+                        "enabled": false,
                         "manipulators": [
                             {
                                 "from": {

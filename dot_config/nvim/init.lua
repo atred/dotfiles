@@ -1,4 +1,4 @@
--- ########## Basics
+-- Basics
 vim.opt.history = 100
 vim.opt.filetype.plugin = "on"
 vim.opt.filetype.indent = "on"
@@ -83,7 +83,7 @@ vim.opt.clipboard = "unnamedplus"
 vim.g.markdown_recommended_style = 0
 vim.opt.conceallevel = 3 -- hide * markup for bold/italic
 
--- ########## Key mappings
+-- Key mappings
 -- Leader
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
@@ -107,7 +107,7 @@ vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right win
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
--- ########## Autocommands
+-- Autocommands
 local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
@@ -131,43 +131,61 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- ########## Theme
-vim.cmd.colorscheme("default")
+-- Theme
+vim.cmd.colorscheme("catppuccin")
+--vim.cmd.colorscheme("retrobox")
 
 -- Statusline
-local mode_labels = {
-  n       = "",
-  i       = "-- INSERT --  ",
-  v       = "-! VISUAL !-  ",
-  V       = "-- V-LINE --  ",
-  ["\22"] = "!! V-BLOCK !! ",
-  c       = "CMD  ",
-  R       = "REPLACE  ",
-  t       = "TERM  ",
+-- mode -> { label, highlight group whose fg color is used for that mode }
+local modes = {
+  n = { "NORMAL", "DiagnosticInfo" }, i = { "INSERT", "DiagnosticOk" }, t = { "TERMINAL", "DiagnosticOk" },
+  v = { "VISUAL", "DiagnosticWarn" }, V = { "V-LINE", "DiagnosticWarn" }, ["\22"] = { "V-BLOCK", "DiagnosticWarn" },
+  s = { "SELECT", "DiagnosticWarn" }, S = { "S-LINE", "DiagnosticWarn" }, ["\19"] = { "S-BLOCK", "DiagnosticWarn" },
+  R = { "REPLACE", "DiagnosticError" }, c = { "COMMAND", "DiagnosticHint" },
 }
 
-function _G.statusline_render()
-  local label = mode_labels[vim.fn.mode()] or ""
+local function get(name, attr)
+  local h = vim.api.nvim_get_hl(0, { name = name, link = false })
+  if h.reverse then attr = attr == "fg" and "bg" or "fg" end
+  return h[attr]
+end
 
-  local name  = vim.fn.expand("%:t")
-  if name == "" then name = "[no name]" end
-  local flags = (vim.bo.modified and " [+]" or "") .. (not vim.bo.modifiable and " [-]" or "")
+local function set_colors()
+  local set = vim.api.nvim_set_hl
+  local base = get("Normal", "bg") or (vim.o.background == "dark" and 0x000000 or 0xffffff)
+  local c_fg, c_bg = get("StatusLine", "fg"), get("StatusLine", "bg")
+  local b_bg = get("CursorLine", "bg") or base
+  set(0, "StatusLine", { fg = c_fg, bg = c_bg }) -- flatten reverse/bold so our groups don't inherit them
+  set(0, "StlCB", { fg = b_bg, bg = c_bg })
+  for _, m in pairs(modes) do
+    local col = get(m[2], "fg") or c_fg
+    set(0, "StlA" .. m[2], { fg = base, bg = col, bold = true })
+    set(0, "StlB" .. m[2], { fg = col, bg = b_bg })
+    set(0, "StlAC" .. m[2], { fg = col, bg = c_bg })
+  end
+end
 
-  local errors   = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
-  local warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
-  local ft       = vim.bo.filetype ~= "" and (vim.bo.filetype .. "  ") or ""
+local file = " %t%( %m%r%)"
 
-  vim.api.nvim_set_hl(0, "MyStatusLine", { bold = true })
+function _G.Statusline()
+  local win = vim.g.statusline_winid
+  if win ~= vim.api.nvim_get_current_win() then return file .. "%=%3l:%-2v " end -- inactive window
+
+  local m = modes[vim.fn.mode():sub(1, 1)] or modes.n
+  local bo = vim.bo[vim.api.nvim_win_get_buf(win)]
+  local info = vim.tbl_filter(function(s) return s ~= "" end,
+    { bo.fenc ~= "" and bo.fenc or vim.o.enc, bo.fileformat, bo.filetype })
+  local a, b = "%#StlA" .. m[2] .. "#", "%#StlB" .. m[2] .. "#"
 
   return table.concat({
-    "%#MyStatusLine#",
-    "  ", label, name, flags, " ",
-    "%=",
-    errors   > 0 and ("E:" .. errors .. " ")  or "",
-    warnings > 0 and ("W:" .. warnings .. " ") or "",
-    ft, "%l:%c  %p%%  ",
+    a, " ", m[1], " %#StlAC", m[2], "#\u{e0b0}%#StatusLine#", file, "%=",
+    table.concat(info, " \u{e0b3} "), " %#StlCB#\u{e0b2}",
+    b, " %3P \u{e0b2}", a, " %3l:%-2v ",
   })
 end
 
-vim.o.statusline = "%{%v:lua.statusline_render()%}"
-vim.o.laststatus = 2
+vim.o.statusline = "%!v:lua.Statusline()"
+vim.o.showmode = false
+vim.api.nvim_create_autocmd("ColorScheme", { callback = set_colors })
+vim.api.nvim_create_autocmd("ModeChanged", { command = "redrawstatus" })
+set_colors()

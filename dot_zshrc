@@ -4,7 +4,7 @@ export EDITOR="nvim"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 path+="${HOME}/.local/bin"
-path+="${HOME}/.rd/bin"
+path+="${HOME}/.rd/bin" # rancher desktop
 export path
 
 # Stop less from recording history
@@ -32,12 +32,8 @@ alias vi=nvim
 alias vim=nvim
 alias ch=chezmoi
 alias t='tmux new-session -A -s home'
-
-# git
 alias gcm='git commit -m'
 alias gs='git status'
-
-# k8s
 alias k='kubectl'
 alias kc='kubectx'
 alias kn='kubens'
